@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "200998447423",
+    "project_id": "mytracker-5251a",
+    "storage_bucket": "mytracker-5251a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:200998447423:android:de2be8680691c404580b8a",
+        "android_client_info": {
+          "package_name": "com.example.mytracker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAE0IJNxnEyM9VAsDaYDVx_vaKgr9Lp9oY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
