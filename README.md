@@ -3,7 +3,7 @@
 ![Green Gradient Application Showcase Presentation](https://github.com/user-attachments/assets/2af70e46-a536-4dc0-95e0-096d2a946b80)
 ![Green Gradient Application Showcase Presentation (1)](https://github.com/user-attachments/assets/5b12ac86-b97f-47b3-b10f-cc06fb707d1d)
 
-MyTracker is a **cross-platform habit tracking app** (mobile + web) built with **Flutter** used **Firebase**.  
+MyTracker is a **cross-platform habit tracking app** (mobile + web) built with **Flutter**.
 It helps users build positive habits, stay motivated, and gain actionable insights into their daily routines.  
 here's the video link - https://drive.google.com/file/d/1I76WotgHRkXLGC8wr_z0jiobRY48FkcU/view?usp=drivesdk 
 ---
@@ -95,4 +95,5 @@ flutterfire configure
 
 # Run the app
 flutter run
+
 
