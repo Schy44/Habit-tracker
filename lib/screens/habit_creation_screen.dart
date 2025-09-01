@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mytracker/models/habit_model.dart';
+import 'package:mytracker/models/predefined_categories.dart';
 import 'package:mytracker/providers/habit_provider.dart';
 import 'package:mytracker/theme/app_colors.dart';
 import 'package:mytracker/theme/app_styles.dart';
@@ -7,12 +8,6 @@ import 'package:mytracker/theme/app_typography.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // For Timestamp
-
-class _Category {
-  final String name;
-  final IconData icon;
-  const _Category(this.name, this.icon);
-}
 
 class HabitCreationScreen extends StatefulWidget {
   final Habit? habit;
@@ -30,16 +25,12 @@ class _HabitCreationScreenState extends State<HabitCreationScreen> {
   late TextEditingController _notesController;
   late TextEditingController _startDateController;
 
-  _Category? _selectedCategory;
+  Map<String, dynamic>? _selectedCategory;
   String _frequency = 'Daily';
   bool get isEditMode => widget.habit != null;
 
-  final List<_Category> _categories = const [
-    _Category('Health', Icons.water_drop_outlined),
-    _Category('Study', Icons.book_outlined),
-    _Category('Fitness', Icons.directions_run_outlined),
-  ];
-  late final Map<String, _Category> _categoryMap = { for (var c in _categories) c.name : c };
+  final List<Map<String, dynamic>> _categories = PredefinedCategories.categories;
+  late final Map<String, Map<String, dynamic>> _categoryMap = { for (var c in _categories) c['name'] : c };
 
   @override
   void initState() {
@@ -64,10 +55,8 @@ class _HabitCreationScreenState extends State<HabitCreationScreen> {
   }
 
   Future<void> _saveHabit() async {
-    print('[_saveHabit] method called.');
     if (_formKey.currentState?.validate() ?? false) {
       _formKey.currentState?.save();
-      print('[_saveHabit] Form validation passed.');
       final habitProvider = Provider.of<HabitProvider>(context, listen: false);
 
       // Parse startDate from controller
@@ -80,7 +69,6 @@ class _HabitCreationScreenState extends State<HabitCreationScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Invalid start date format.')),
           );
-          print('[_saveHabit] Error parsing start date: $e');
           return;
         }
       }
@@ -89,11 +77,11 @@ class _HabitCreationScreenState extends State<HabitCreationScreen> {
         if (isEditMode) {
           final updatedHabit = widget.habit!.copyWith(
             title: _titleController.text,
-            category: _selectedCategory!.name,
+            category: _selectedCategory!['name'],
             frequency: _frequency,
             startDate: startDateTimestamp,
             notes: _notesController.text,
-            // These fields are not edited on this screen, so copy from original
+            // These fields are not edited on this screens, so copy from original
             userId: widget.habit!.userId,
             createdAt: widget.habit!.createdAt,
             updatedAt: Timestamp.now(),
@@ -102,15 +90,13 @@ class _HabitCreationScreenState extends State<HabitCreationScreen> {
             bestStreak: widget.habit!.bestStreak,
             isArchived: widget.habit!.isArchived,
           );
-          print('[_saveHabit] Updating habit: ${updatedHabit.toMap()}');
           await habitProvider.updateHabit(updatedHabit);
-          print('[_saveHabit] Habit updated successfully.');
         } else {
           final newHabit = Habit(
             id: DateTime.now().millisecondsSinceEpoch.toString(),
             userId: '', // userId will be set by HabitProvider
             title: _titleController.text,
-            category: _selectedCategory!.name,
+            category: _selectedCategory!['name'],
             frequency: _frequency,
             startDate: startDateTimestamp,
             notes: _notesController.text,
@@ -121,9 +107,7 @@ class _HabitCreationScreenState extends State<HabitCreationScreen> {
             bestStreak: 0,
             isArchived: false,
           );
-          print('[_saveHabit] Creating new habit: ${newHabit.toMap()}');
           await habitProvider.addHabit(newHabit);
-          print('[_saveHabit] New habit added successfully.');
         }
         if (mounted) {
           int popCount = isEditMode ? 2 : 1;
@@ -132,15 +116,12 @@ class _HabitCreationScreenState extends State<HabitCreationScreen> {
           }
         }
       } catch (e) {
-        print('[_saveHabit] Error saving habit: $e');
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Error saving habit: $e')),
           );
         }
       }
-    } else {
-      print('[_saveHabit] Form validation failed.');
     }
   }
 
@@ -193,15 +174,15 @@ class _HabitCreationScreenState extends State<HabitCreationScreen> {
   }
 
   Widget _buildCategoryDropdown() {
-    return DropdownButtonFormField<_Category>(
+    return DropdownButtonFormField<Map<String, dynamic>>(
       value: _selectedCategory,
       decoration: InputDecoration(
         labelText: 'Category *',
       ),
       items: _categories.map((category) {
-        return DropdownMenuItem<_Category>(
+        return DropdownMenuItem<Map<String, dynamic>>(
           value: category,
-          child: Row(children: [Icon(category.icon, size: 20), const SizedBox(width: AppStyles.sm), Text(category.name)]),
+          child: Row(children: [Icon(category['icon'], size: 20), const SizedBox(width: AppStyles.sm), Text(category['name'])]),
         );
       }).toList(),
       onChanged: (value) => setState(() => _selectedCategory = value),

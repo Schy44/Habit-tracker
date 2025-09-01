@@ -52,23 +52,18 @@ class HabitProvider with ChangeNotifier {
   }
 
   Future<void> addHabit(Habit habit) async {
-    print('[HabitProvider] addHabit called with habit: ${habit.toMap()}');
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
     try {
       if (_auth.currentUser == null) {
-        print('[HabitProvider] Error: User not logged in.');
         throw Exception('User not logged in.');
       }
       // Ensure habit has a userId before adding to Firestore
       final habitWithUserId = habit.copyWith(userId: _auth.currentUser!.uid);
-      print('[HabitProvider] Adding habit to service: ${habitWithUserId.toMap()}');
       await _habitService.addHabit(habitWithUserId);
-      print('[HabitProvider] Habit added successfully to service.');
     } on Exception catch (e) {
       _errorMessage = e.toString();
-      print('[HabitProvider] Error adding habit: $_errorMessage');
     } finally {
       _isLoading = false;
       notifyListeners();

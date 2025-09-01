@@ -107,7 +107,7 @@ class _HabitCategoriesScreenState extends State<HabitCategoriesScreen> {
         label: const Text('Add New Category'),
         style: AppStyles.textButtonStyle,
         onPressed: () {
-          // TODO: Implement Add New Category dialog/screen
+          // TODO: Implement Add New Category dialog/screens
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Add New Category functionality not implemented.')),
           );

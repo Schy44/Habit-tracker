@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mytracker/models/habit_model.dart';
+import 'package:mytracker/models/predefined_categories.dart';
 import 'package:mytracker/providers/habit_provider.dart';
 import 'package:mytracker/screens/habit_creation_screen.dart';
 import 'package:mytracker/theme/app_colors.dart';
@@ -101,8 +102,8 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
           children: [
             _HabitOverviewCard(habit: widget.habit),
             _ProgressChartCard(),
-            _StatisticsCard(),
-            _NotesCard(notes: "Helps me stay hydrated and feel more energetic throughout the day."), // Placeholder notes
+            _StatisticsCard(habit: widget.habit),
+            _NotesCard(notes: widget.habit.notes ?? "No notes for this habit."),
             const SizedBox(height: AppStyles.lg),
             _buildActionButtons(context),
           ],
@@ -139,20 +140,13 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
   }
 }
 
-// All widgets below use placeholder data as the current Habit model is not sufficient.
-
 class _HabitOverviewCard extends StatelessWidget {
   final Habit habit;
   const _HabitOverviewCard({required this.habit});
 
   IconData _getCategoryIcon(String category) {
-    // This should be centralized if used in multiple places
-    switch (category.toLowerCase()) {
-      case 'health': return Icons.water_drop;
-      case 'study': return Icons.book;
-      case 'fitness': return Icons.directions_run;
-      default: return Icons.star;
-    }
+    final categoryData = PredefinedCategories.categories.firstWhere((c) => c['name'] == category, orElse: () => {'icon': Icons.star});
+    return categoryData['icon'];
   }
 
   @override
@@ -176,9 +170,9 @@ class _HabitOverviewCard extends StatelessWidget {
             child: Text('${habit.category} • ${habit.frequency}', style: AppTypography.textTheme.bodyMedium),
           ),
           const Divider(height: AppStyles.lg),
-          _buildStatRow('Current Streak', '🔥 5 days'),
-          _buildStatRow('Best Streak', '🏆 12 days'),
-          _buildStatRow('Completion Rate', '85%'),
+          _buildStatRow('Current Streak', '🔥 ${habit.currentStreak} days'),
+          _buildStatRow('Best Streak', '🏆 ${habit.bestStreak} days'),
+          _buildStatRow('Completion Rate', '${(habit.completedDates.length / (DateTime.now().difference(habit.createdAt.toDate()).inDays + 1) * 100).toStringAsFixed(0)}%'),
         ],
       ),
     );
@@ -281,16 +275,19 @@ class _ProgressChartCardState extends State<_ProgressChartCard> {
 }
 
 class _StatisticsCard extends StatelessWidget {
+  final Habit habit;
+  const _StatisticsCard({required this.habit});
+
   @override
   Widget build(BuildContext context) {
     return _DetailsCard(
       title: 'Statistics',
       child: Column(
         children: [
-          _buildStatRow('This Month', '22/30 days (73%)'),
-          _buildStatRow('Total Completions', '127'),
-          _buildStatRow('Average per week', '6.2'),
-          _buildStatRow('Longest streak', '12 days'),
+          _buildStatRow('This Month', '${habit.completedDates.where((d) => d.toDate().month == DateTime.now().month).length}/${DateTime(DateTime.now().year, DateTime.now().month + 1, 0).day} days (${(habit.completedDates.where((d) => d.toDate().month == DateTime.now().month).length / DateTime(DateTime.now().year, DateTime.now().month + 1, 0).day * 100).toStringAsFixed(0)}%)'),
+          _buildStatRow('Total Completions', '${habit.completedDates.length}'),
+          _buildStatRow('Average per week', '${(habit.completedDates.length / (DateTime.now().difference(habit.createdAt.toDate()).inDays / 7)).toStringAsFixed(1)}'),
+          _buildStatRow('Longest streak', '${habit.bestStreak} days'),
         ],
       ),
     );

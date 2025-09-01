@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mytracker/models/habit_model.dart';
+import 'package:mytracker/models/predefined_categories.dart';
 import 'package:mytracker/theme/app_colors.dart';
 import 'package:mytracker/theme/app_styles.dart';
 import 'package:mytracker/theme/app_typography.dart';
@@ -15,12 +16,8 @@ class HabitCard extends StatelessWidget {
   const HabitCard({super.key, required this.habit, required this.isCompleted, required this.onToggle});
 
   IconData _getCategoryIcon(String category) {
-    switch (category.toLowerCase()) {
-      case 'health': return Icons.water_drop;
-      case 'study': return Icons.book;
-      case 'fitness': return Icons.directions_run;
-      default: return Icons.star;
-    }
+    final categoryData = PredefinedCategories.categories.firstWhere((c) => c['name'] == category, orElse: () => {'icon': Icons.star});
+    return categoryData['icon'];
   }
 
   @override
@@ -46,7 +43,7 @@ class HabitCard extends StatelessWidget {
               const SizedBox(width: AppStyles.sm),
               Icon(_getCategoryIcon(habit.category), color: theme.colorScheme.primary),
               const SizedBox(width: AppStyles.sm),
-              Expanded(child: Text(habit.title, style: AppTypography.textTheme.titleMedium?.copyWith(decoration: isCompleted ? TextDecoration.lineThrough : null))),
+              Expanded(child: Text(habit.title, style: AppTypography.textTheme.titleMedium)),
             ],
           ),
           Padding(

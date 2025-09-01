@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mytracker/models/quote_model.dart';
 import 'package:mytracker/models/user_model.dart';
 
 class FirestoreService {
@@ -24,5 +25,36 @@ class FirestoreService {
   // Update user document
   Future<void> updateUser(String userId, Map<String, dynamic> data) async {
     await _firestore.collection('users').doc(userId).update(data);
+  }
+
+  // Add a favorite quote for a user
+  Future<void> addFavoriteQuote(String userId, Quote quote) async {
+    await _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('favorites')
+        .doc(quote.id)
+        .set(quote.toJson());
+  }
+
+  // Remove a favorite quote for a user
+  Future<void> removeFavoriteQuote(String userId, String quoteId) async {
+    await _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('favorites')
+        .doc(quoteId)
+        .delete();
+  }
+
+  // Get all favorite quotes for a user
+  Stream<List<Quote>> getFavoriteQuotes(String userId) {
+    return _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('favorites')
+        .snapshots()
+        .map((snapshot) =>
+            snapshot.docs.map((doc) => Quote.fromJson(doc.data())).toList());
   }
 }

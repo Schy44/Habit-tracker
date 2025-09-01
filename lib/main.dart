@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:mytracker/providers/quote_provider.dart';
+import 'package:mytracker/screens/favorites_screen.dart';
 import 'package:mytracker/screens/home_screen.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
@@ -26,6 +28,7 @@ void main() async {
         ChangeNotifierProvider(create: (context) => auth_provider.AuthProvider()), // Use aliased AuthProvider
         ChangeNotifierProvider(create: (context) => ThemeNotifier()),
         ChangeNotifierProvider(create: (context) => HabitProvider()),
+        ChangeNotifierProvider(create: (context) => QuoteProvider()),
       ],
       child: const MyApp(),
     ),
@@ -70,6 +73,7 @@ class MyApp extends StatelessWidget {
             '/home': (context) => const HomeScreen(),
             '/settings': (context) => const SettingsScreen(),
             '/profile': (context) => const ProfileScreen(), // Add ProfileScreen route
+            '/favorites': (context) => const FavoritesScreen(),
           },
         );
       },

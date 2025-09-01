@@ -37,35 +37,34 @@ class HabitService {
     final habitDoc = await habitRef.get();
 
     if (habitDoc.exists) {
-      List<Timestamp> completedDates = List<Timestamp>.from(habitDoc.data()?['completedDates'] ?? []);
+      final habit = Habit.fromMap(habitDoc.data()!, habitDoc.id);
+      List<Timestamp> completedDates = List<Timestamp>.from(habit.completedDates);
       final now = DateTime.now().toLocal();
-      final todayMidnight = now.copyWith(hour: 0, minute: 0, second: 0, millisecond: 0, microsecond: 0);
-      final yesterdayMidnight = todayMidnight.subtract(const Duration(days: 1));
-
-      // Remove duplicates and sort dates
-      completedDates = completedDates.toSet().toList();
-      completedDates.sort((a, b) => a.toDate().compareTo(b.toDate()));
+      final todayMidnight = DateTime(now.year, now.month, now.day);
 
       if (isCompleted) {
-        // Only allow marking completion for today or yesterday
-        if (!_isSameDay(todayMidnight, now) && !_isSameDay(yesterdayMidnight, now)) {
-          // This means the current time is not today or yesterday, so we don't allow marking completion
-          // In a real app, you might throw an error or return false.
-          return; 
-        }
-
-        // Add today's date if not already present
-        if (!completedDates.any((date) => _isSameDay(date.toDate(), todayMidnight))) {
-          completedDates.add(Timestamp.fromDate(todayMidnight));
+        if (habit.frequency == 'Daily') {
+          if (!completedDates.any((date) => _isSameDay(date.toDate(), todayMidnight))) {
+            completedDates.add(Timestamp.fromDate(todayMidnight));
+          }
+        } else if (habit.frequency == 'Weekly') {
+          final startOfWeek = todayMidnight.subtract(Duration(days: todayMidnight.weekday - 1));
+          if (!completedDates.any((date) => date.toDate().isAfter(startOfWeek))) {
+            completedDates.add(Timestamp.fromDate(todayMidnight));
+          }
         }
       } else {
-        // Remove today's date if present
-        completedDates.removeWhere((date) => _isSameDay(date.toDate(), todayMidnight));
+        if (habit.frequency == 'Daily') {
+          completedDates.removeWhere((date) => _isSameDay(date.toDate(), todayMidnight));
+        } else if (habit.frequency == 'Weekly') {
+          final startOfWeek = todayMidnight.subtract(Duration(days: todayMidnight.weekday - 1));
+          completedDates.removeWhere((date) => date.toDate().isAfter(startOfWeek));
+        }
       }
 
       // Recalculate streaks
-      final int newCurrentStreak = _calculateCurrentStreak(completedDates);
-      final int newBestStreak = _calculateBestStreak(completedDates);
+      final int newCurrentStreak = _calculateCurrentStreak(completedDates, habit.frequency);
+      final int newBestStreak = _calculateBestStreak(completedDates, habit.frequency);
 
       await habitRef.update({
         'completedDates': completedDates,
@@ -82,43 +81,62 @@ class HabitService {
            date1.day == date2.day;
   }
 
-  int _calculateCurrentStreak(List<Timestamp> completedDates) {
+  int _calculateCurrentStreak(List<Timestamp> completedDates, String frequency) {
     if (completedDates.isEmpty) return 0;
 
     int currentStreak = 0;
     DateTime lastDate = DateTime.now().toLocal().copyWith(hour: 0, minute: 0, second: 0, millisecond: 0, microsecond: 0);
 
-    // Check if today is completed
-    if (completedDates.any((date) => _isSameDay(date.toDate(), lastDate))) {
-      currentStreak = 1;
-    } else {
-      // If today is not completed, check if yesterday was completed
-      lastDate = lastDate.subtract(const Duration(days: 1));
-      if (!completedDates.any((date) => _isSameDay(date.toDate(), lastDate))) {
-        return 0; // Streak broken if yesterday was not completed
-      }
-      currentStreak = 1; // Start streak from yesterday
-    }
-
-    // Iterate backwards from yesterday
-    for (int i = 1; i < completedDates.length + 1; i++) {
-      final previousDay = lastDate.subtract(Duration(days: i));
-      if (completedDates.any((date) => _isSameDay(date.toDate(), previousDay))) {
-        currentStreak++;
+    if (frequency == 'Daily') {
+      if (completedDates.any((date) => _isSameDay(date.toDate(), lastDate))) {
+        currentStreak = 1;
       } else {
-        break; // Streak broken
+        lastDate = lastDate.subtract(const Duration(days: 1));
+        if (!completedDates.any((date) => _isSameDay(date.toDate(), lastDate))) {
+          return 0;
+        }
+        currentStreak = 1;
+      }
+
+      for (int i = 1; i < completedDates.length + 1; i++) {
+        final previousDay = lastDate.subtract(Duration(days: i));
+        if (completedDates.any((date) => _isSameDay(date.toDate(), previousDay))) {
+          currentStreak++;
+        } else {
+          break;
+        }
+      }
+    } else if (frequency == 'Weekly') {
+      final startOfWeek = lastDate.subtract(Duration(days: lastDate.weekday - 1));
+      if (completedDates.any((date) => date.toDate().isAfter(startOfWeek))) {
+        currentStreak = 1;
+      } else {
+        final startOfLastWeek = startOfWeek.subtract(const Duration(days: 7));
+        if (!completedDates.any((date) => date.toDate().isAfter(startOfLastWeek) && date.toDate().isBefore(startOfWeek))) {
+          return 0;
+        }
+        currentStreak = 1;
+      }
+
+      for (int i = 1; i < completedDates.length + 1; i++) {
+        final startOfPreviousWeek = startOfWeek.subtract(Duration(days: 7 * i));
+        final endOfPreviousWeek = startOfPreviousWeek.add(const Duration(days: 6));
+        if (completedDates.any((date) => date.toDate().isAfter(startOfPreviousWeek) && date.toDate().isBefore(endOfPreviousWeek))) {
+          currentStreak++;
+        } else {
+          break;
+        }
       }
     }
     return currentStreak;
   }
 
-  int _calculateBestStreak(List<Timestamp> completedDates) {
+  int _calculateBestStreak(List<Timestamp> completedDates, String frequency) {
     if (completedDates.isEmpty) return 0;
 
     int bestStreak = 0;
     int currentStreak = 0;
 
-    // Ensure dates are unique and sorted
     final uniqueSortedDates = completedDates.toSet().toList();
     uniqueSortedDates.sort((a, b) => a.toDate().compareTo(b.toDate()));
 
@@ -127,22 +145,39 @@ class HabitService {
     currentStreak = 1;
     bestStreak = 1;
 
-    for (int i = 1; i < uniqueSortedDates.length; i++) {
-      final previousDate = uniqueSortedDates[i - 1].toDate();
-      final currentDate = uniqueSortedDates[i].toDate();
+    if (frequency == 'Daily') {
+      for (int i = 1; i < uniqueSortedDates.length; i++) {
+        final previousDate = uniqueSortedDates[i - 1].toDate();
+        final currentDate = uniqueSortedDates[i].toDate();
 
-      if (_isSameDay(currentDate, previousDate.add(const Duration(days: 1)))) {
-        currentStreak++;
-      } else {
-        currentStreak = 1;
+        if (_isSameDay(currentDate, previousDate.add(const Duration(days: 1)))) {
+          currentStreak++;
+        } else {
+          currentStreak = 1;
+        }
+        if (currentStreak > bestStreak) {
+          bestStreak = currentStreak;
+        }
       }
-      if (currentStreak > bestStreak) {
-        bestStreak = currentStreak;
+    } else if (frequency == 'Weekly') {
+      for (int i = 1; i < uniqueSortedDates.length; i++) {
+        final previousDate = uniqueSortedDates[i - 1].toDate();
+        final currentDate = uniqueSortedDates[i].toDate();
+
+        final startOfPreviousWeek = previousDate.subtract(Duration(days: previousDate.weekday - 1));
+        final startOfCurrentWeek = currentDate.subtract(Duration(days: currentDate.weekday - 1));
+
+        if (_isSameDay(startOfCurrentWeek, startOfPreviousWeek.add(const Duration(days: 7)))) {
+          currentStreak++;
+        } else if (!_isSameDay(startOfCurrentWeek, startOfPreviousWeek)) {
+          currentStreak = 1;
+        }
+        if (currentStreak > bestStreak) {
+          bestStreak = currentStreak;
+        }
       }
     }
 
-    // Edge case: if the last date is not today or yesterday, the current streak might not be the best
-    // This logic is for historical best streak, not necessarily ending today.
     return bestStreak;
   }
 }
