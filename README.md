@@ -1,124 +1,99 @@
-# MyTracker: Your Personal Habit Tracker
+# 📌 MyTracker
 
-![App Screenshot Placeholder](https://via.placeholder.com/800x400?text=MyTracker+App+Screenshots)
+![Green Gradient Application Showcase Presentation](https://github.com/user-attachments/assets/2af70e46-a536-4dc0-95e0-096d2a946b80)
+![Green Gradient Application Showcase Presentation (1)](https://github.com/user-attachments/assets/5b12ac86-b97f-47b3-b10f-cc06fb707d1d)
 
-MyTracker is a modern, intuitive, and feature-rich habit tracking application designed to help you build and maintain positive habits, track your progress, and achieve your personal goals. With engaging gamification elements, insightful analytics, and a clean user interface, MyTracker makes habit formation an enjoyable and rewarding journey.
+MyTracker is a **cross-platform habit tracking app** (mobile + web) built with **Flutter**.
+It helps users build positive habits, stay motivated, and gain actionable insights into their daily routines.  
+here's the video link - https://drive.google.com/file/d/1I76WotgHRkXLGC8wr_z0jiobRY48fKcU/view?usp=drivesdk 
+Project detailed documantation and ui designs are provided here - https://www.notion.so/MyTracker-Comprehensive-Project-Documentation-131edb06f3c980eca8d9dce47501d85a?source=copy_link#261edb06f3c9805f810ec6478c676907
+---
 
-## ✨ Features
+## 🚀 Features
 
-*   **Comprehensive Habit Management:** Create, edit, and track daily, weekly, or custom habits with ease.
-*   **Advanced Statistics & Analytics:**
-    *   **Journey Overview Dashboard:** Get a quick glance at your overall progress, today's completion rate, and active streaks.
-    *   **Interactive Performance Charts:** Visualize your consistency and trends over various time ranges (week, month, quarter, year) with smooth line charts.
-    *   **Category Performance Breakdown:** See how you're performing across different habit categories with progress bars and color-coded indicators.
-    *   **Weekly Consistency Heatmap:** A GitHub-style heatmap to visualize your daily habit completion intensity over four weeks.
-*   **Smart Insights System:** Receive AI-like recommendations and personalized suggestions for improvement based on your habit patterns.
-*   **Enhanced Achievement System:** Unlock and track your progress towards various achievements with visual indicators and detailed descriptions.
-*   **Engaging Gamification:** Motivate yourself with streaks, achievements, and a streak leaderboard.
-*   **Inspirational Quotes:** Stay inspired with a carousel of motivational quotes, featuring copy and favorite functionalities.
-*   **User Profile Management:** Customize your profile, including personal details and an avatar.
-*   **Intuitive UI/UX:** Enjoy a clean, modern design with smooth animations, haptic feedback, and a consistent sage green theme.
-*   **Authentication:** Secure user authentication powered by Firebase.
+- **User Authentication & Profiles**
+  - Secure email/password login with Firebase Authentication
+  - User profiles with personal details and preferences
 
-## 🚀 Technologies Used
+- **Comprehensive Habit Tracking**
+  - Create, edit, and delete habits with categories, goals, and reminders
+  - Track daily/weekly progress with streaks & completion history
+  - Swipe actions for quick complete/delete
 
-*   **Flutter:** Frontend framework for building cross-platform mobile and web applications.
-*   **Firebase:** Backend services for:
-    *   **Firebase Authentication:** User registration and login.
-    *   **Cloud Firestore:** NoSQL database for storing user data, habits, and favorite quotes.
-    *   **Firebase Storage:** Cloud storage for user avatars.
-*   **`fl_chart`:** Powerful Flutter chart library for data visualization.
-*   **`carousel_slider`:** Flexible carousel widget for displaying quotes.
-*   **`flutter_heatmap_calendar`:** For visualizing weekly consistency.
-*   **`image_picker`:** For selecting images from the device gallery.
-*   **`http`:** For making API requests to fetch quotes.
-*   **`provider`:** State management solution for Flutter.
-*   **`intl`:** For internationalization and date formatting.
+- **Advanced Statistics & Insights**
+  - Interactive charts & dashboards (using **fl_chart**)
+  - Weekly/monthly performance breakdown
+  - GitHub-style **consistency heatmap**
+  - Smart motivational insights & achievement badges
 
-## ⚙️ Installation
+- **Inspirational Quotes**
+  - Integrated **DummyJSON Quotes API**
+  - Random motivational quotes on the home screen
+  - Save and manage favorite quotes in Firestore
+  - Copy/share quotes easily
 
-Follow these steps to set up and run MyTracker locally:
-
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/your-username/mytracker.git
-    cd mytracker
-    ```
-
-2.  **Install Flutter dependencies:**
-    ```bash
-    flutter pub get
-    ```
-
-3.  **Firebase Project Setup:**
-    *   Create a new Firebase project in the [Firebase Console](https://console.firebase.google.com/).
-    *   Enable **Authentication** (Email/Password provider).
-    *   Enable **Cloud Firestore**.
-    *   Enable **Cloud Storage**.
-    *   Add a new Web App to your Firebase project and copy its configuration.
-    *   Create `lib/firebase_options.dart` using the FlutterFire CLI:
-        ```bash
-        flutter pub global activate flutterfire_cli
-        flutterfire configure
-        ```
-        Follow the prompts to select your Firebase project and platforms.
-
-4.  **Update Firebase Security Rules:**
-    Go to your Firebase Console -> Firestore Database -> Rules tab and replace the existing rules with the following:
-    ```firestore
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-
-    // User-specific data
-    match /users/{userId}/{document=**} {
-      allow read, write: if request.auth.uid == userId;
-    }
-
-    // Public data (if any, e.g., global quotes - not currently implemented as public)
-    // match /public_collection/{documentId} {
-    //   allow read: if true;
-    // }
-  }
-}
-    ```
-    Go to your Firebase Console -> Storage -> Rules tab and replace the existing rules with the following:
-    ```firestore
-rules_version = '2';
-service firebase.storage {
-  match /b/{bucket}/o {
-    match /user_avatars/{userId}/{fileName} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-    }
-  }
-}
-    ```
-
-5.  **Run the application:**
-    ```bash
-    flutter run
-    ```
-
-## 💡 Usage
-
-*   **Sign Up/Login:** Create an account or log in to start tracking your habits.
-*   **Create Habits:** Use the intuitive interface to define your habits, set frequencies, and add reminders.
-*   **Track Progress:** Mark habits as complete daily and watch your streaks grow.
-*   **Explore Statistics:** Visit the statistics screen to view detailed charts, insights, and achievements.
-*   **Manage Profile:** Update your display name, personal details, and avatar in the profile section.
-
-## 🤝 Contributing
-
-Contributions are welcome! If you have suggestions for improvements or new features, please open an issue or submit a pull request.
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. (Note: You might need to create a LICENSE file in your project root if it doesn't exist).
-
-## ✉️ Contact
-
-For any questions or feedback, please contact [Your Name/Email/GitHub Profile].
+- **Modern UI/UX**
+  - Consistent theme with animations & haptic feedback
+  - Light/Dark mode support with **google_fonts**
+  - Clean, minimal, and user-friendly design
 
 ---
 
-**Note:** This README is a template. Remember to replace placeholder text like `https://github.com/your-username/mytracker.git` and `[Your Name/Email/GitHub Profile]` with your actual project details. You might also want to add actual app screenshots to the placeholder at the top.
+## 🛠️ Tech Stack
+
+### Frontend
+- **Flutter (Dart)** – UI development (cross-platform)
+- **Provider** – State management
+- **fl_chart** – Interactive charts
+- **carousel_slider** – Quotes carousel
+- **flutter_heatmap_calendar** – Consistency heatmap
+
+### Backend
+- **Firebase Authentication** – Secure login & registration
+- **Cloud Firestore** – Stores user data, habits, and favorites
+- **Firebase Storage** – User avatars (planned feature)
+- **Firebase Security Rules** – Secure access control
+
+### External API
+- **DummyJSON Quotes API** → [https://dummyjson.com/quotes](https://dummyjson.com/quotes)  
+  Provides a diverse set of inspirational quotes.
+
+---
+
+## 📂 Project Structure
+lib/
+ ├── main.dart              # App entry point, Firebase init, routes
+ ├── models/                # Data models (User, Habit, Quote)
+ ├── providers/             # State management (Auth, Habits, Quotes, Theme)
+ ├── screens/               # UI Screens (Home, Login, Statistics, Profile)
+ ├── services/              # Business logic (AuthService, HabitService, QuoteService)
+ ├── theme/                 # Colors, typography, styles
+ ├── utils/                 # Helper functions
+ └── widgets/               # Reusable components (HabitCard, StatCard, etc.)
+
+
+
+---
+
+## ⚙️ Development Setup
+
+### Prerequisites
+- [Flutter SDK 3.9.0+](https://flutter.dev/docs/get-started/install)
+- Dart SDK (included with Flutter)
+- Firebase project configured
+
+### Installation
+```bash
+# Clone the repository
+git clone https://github.com/your-username/mytracker.git
+cd mytracker
+
+# Install dependencies
+flutter pub get
+
+# Configure Firebase
+flutterfire configure
+
+# Run the app
+flutter run
+```
