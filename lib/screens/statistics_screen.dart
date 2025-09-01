@@ -918,7 +918,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> with TickerProvider
 
   Widget _buildAchievementBadge(_Achievement achievement) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: achievement.unlocked 
             ? achievement.color.withOpacity(0.1)
@@ -938,14 +938,14 @@ class _StatisticsScreenState extends State<StatisticsScreen> with TickerProvider
             color: achievement.unlocked 
                 ? achievement.color 
                 : Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
-            size: 32,
+            size: 28,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
           Text(
             achievement.title,
             style: TextStyle(
               fontWeight: FontWeight.w600,
-              fontSize: 13,
+              fontSize: 12,
               color: achievement.unlocked 
                   ? achievement.color 
                   : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
@@ -954,11 +954,11 @@ class _StatisticsScreenState extends State<StatisticsScreen> with TickerProvider
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 4),
           Text(
             achievement.description,
             style: TextStyle(
-              fontSize: 11,
+              fontSize: 10,
               color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
             ),
             textAlign: TextAlign.center,
@@ -966,7 +966,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> with TickerProvider
             overflow: TextOverflow.ellipsis,
           ),
           if (!achievement.unlocked && achievement.progress > 0) ...[
-            const SizedBox(height: 8),
+            const SizedBox(height: 4),
             ClipRRect(
               borderRadius: BorderRadius.circular(4),
               child: LinearProgressIndicator(
@@ -976,11 +976,11 @@ class _StatisticsScreenState extends State<StatisticsScreen> with TickerProvider
                 minHeight: 4,
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 2),
             Text(
               '${(achievement.progress * 100).toInt()}%',
               style: TextStyle(
-                fontSize: 10,
+                fontSize: 9,
                 color: achievement.color,
                 fontWeight: FontWeight.w600,
               ),

@@ -12,6 +12,7 @@ import 'package:mytracker/screens/login_screen.dart';
 import 'package:mytracker/screens/signup_screen.dart';
 import 'package:mytracker/screens/settings_screen.dart'; // Import SettingsScreen
 import 'package:mytracker/screens/profile_screen.dart'; // Import ProfileScreen
+import 'package:mytracker/screens/splash_screen.dart';
 import 'package:mytracker/theme/app_theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -55,18 +56,7 @@ class MyApp extends StatelessWidget {
           theme: AppTheme.lightTheme.copyWith(pageTransitionsTheme: pageTransitionsTheme),
           darkTheme: AppTheme.darkTheme.copyWith(pageTransitionsTheme: pageTransitionsTheme),
           themeMode: themeNotifier.themeMode,
-          home: StreamBuilder<User?>(
-            stream: FirebaseAuth.instance.authStateChanges(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              if (snapshot.hasData) {
-                return const HomeScreen();
-              }
-              return const LoginScreen();
-            },
-          ),
+          home: const SplashScreen(),
           routes: {
             '/login': (context) => const LoginScreen(),
             '/signup': (context) => const SignUpScreen(),
