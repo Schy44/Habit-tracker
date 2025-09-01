@@ -6,6 +6,7 @@
 MyTracker is a **cross-platform habit tracking app** (mobile + web) built with **Flutter**.
 It helps users build positive habits, stay motivated, and gain actionable insights into their daily routines.  
 here's the video link - https://drive.google.com/file/d/1I76WotgHRkXLGC8wr_z0jiobRY48FkcU/view?usp=drivesdk 
+Project detailed documantation and ui designs are provided here - https://www.notion.so/MyTracker-Comprehensive-Project-Documentation-131edb06f3c980eca8d9dce47501d85a?source=copy_link#261edb06f3c9805f810ec6478c676907
 ---
 
 ## 🚀 Features
@@ -95,5 +96,6 @@ flutterfire configure
 
 # Run the app
 flutter run
+
 
 
