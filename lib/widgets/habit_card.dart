@@ -12,8 +12,9 @@ class HabitCard extends StatelessWidget {
   final Habit habit;
   final bool isCompleted;
   final ValueChanged<bool> onToggle;
+  final VoidCallback? onEdit;
 
-  const HabitCard({super.key, required this.habit, required this.isCompleted, required this.onToggle});
+  const HabitCard({super.key, required this.habit, required this.isCompleted, required this.onToggle, this.onEdit});
 
   IconData _getCategoryIcon(String category) {
     final categoryData = PredefinedCategories.categories.firstWhere((c) => c['name'] == category, orElse: () => {'icon': Icons.star});
@@ -44,6 +45,13 @@ class HabitCard extends StatelessWidget {
               Icon(_getCategoryIcon(habit.category), color: theme.colorScheme.primary),
               const SizedBox(width: AppStyles.sm),
               Expanded(child: Text(habit.title, style: AppTypography.textTheme.titleMedium)),
+              if (onEdit != null) // Only show if onEdit callback is provided
+                IconButton(
+                  icon: const Icon(Icons.edit, size: 20),
+                  color: theme.colorScheme.onSurface.withOpacity(0.6),
+                  onPressed: onEdit,
+                  tooltip: 'Edit Habit',
+                ),
             ],
           ),
           Padding(

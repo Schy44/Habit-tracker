@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mytracker/models/habit_model.dart';
+import 'package:mytracker/services/firestore_service.dart';
 
 class HabitService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirestoreService _firestoreService = FirestoreService();
 
   // Add a new habit
   Future<void> addHabit(Habit habit) async {
@@ -23,7 +25,8 @@ class HabitService {
 
   // Update an existing habit
   Future<void> updateHabit(Habit habit) async {
-    await _firestore.collection('users').doc(habit.userId).collection('habits').doc(habit.id).update(habit.toMap());
+    await _firestoreService.updateDocument(
+        'users/${habit.userId}/habits', habit.id, habit.toMap());
   }
 
   // Delete a habit

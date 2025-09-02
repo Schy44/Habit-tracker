@@ -490,6 +490,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   habit: habit,
                   isCompleted: isCompleted,
                   onToggle: (value) => _onToggleCompletion(habit, value),
+                  onEdit: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => HabitCreationScreen(habit: habit),
+                      ),
+                    );
+                  },
                 ),
               ),
             );

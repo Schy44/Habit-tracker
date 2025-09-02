@@ -57,4 +57,10 @@ class FirestoreService {
         .map((snapshot) =>
             snapshot.docs.map((doc) => Quote.fromJson(doc.data())).toList());
   }
+
+  // Generic method to update a document in a specified collection
+  Future<void> updateDocument(
+      String collection, String docId, Map<String, dynamic> data) async {
+    await _firestore.collection(collection).doc(docId).update(data);
+  }
 }

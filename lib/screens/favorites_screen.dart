@@ -71,6 +71,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     return Card(
       margin: const EdgeInsets.only(bottom: AppStyles.md),
       elevation: 0,
+      color: Theme.of(context).colorScheme.surfaceContainerHighest, // Use a distinct surface color
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppStyles.borderRadiusMedium)),
       child: Padding(
         padding: const EdgeInsets.all(AppStyles.md),
@@ -79,14 +80,14 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
           children: [
             Text(
               '"${quote.content}"',
-              style: AppTypography.textTheme.bodyLarge?.copyWith(fontStyle: FontStyle.italic),
+              style: AppTypography.textTheme.bodyLarge?.copyWith(fontStyle: FontStyle.italic, color: Theme.of(context).colorScheme.onSurface),
             ),
             const SizedBox(height: AppStyles.sm),
             Align(
               alignment: Alignment.bottomRight,
               child: Text(
                 '— ${quote.author}',
-                style: AppTypography.textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6)),
+                style: AppTypography.textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8)), // Increased opacity
               ),
             ),
             const SizedBox(height: AppStyles.md),
@@ -94,7 +95,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 IconButton(
-                  icon: const Icon(Icons.copy, color: AppColors.primary),
+                  icon: Icon(Icons.copy, color: Theme.of(context).colorScheme.primary),
                   onPressed: () {
                     Clipboard.setData(ClipboardData(text: '"${quote.content}" - ${quote.author}'));
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -103,7 +104,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                   },
                 ),
                 IconButton(
-                  icon: const Icon(Icons.delete, color: AppColors.error),
+                  icon: Icon(Icons.delete, color: Theme.of(context).colorScheme.error),
                   onPressed: () async {
                     if (userId != null) {
                       await quoteProvider.removeFavoriteQuote(userId, quote.id);
